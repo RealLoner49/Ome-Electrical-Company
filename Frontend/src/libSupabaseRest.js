@@ -4,9 +4,14 @@ const PRODUCTS_TABLE = import.meta.env.VITE_SUPABASE_PRODUCTS_TABLE || 'products
 
 const DEFAULT_ADMIN_EMAIL = 'omeelectrical28@gmail.com';
 const ADMIN_EMAIL_CONFIG = import.meta.env.VITE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
+const ADMIN_EMAILS = new Set([
+  ADMIN_EMAIL_CONFIG,
+  DEFAULT_ADMIN_EMAIL,
+  'omeeletrical28@gmail.com',
+].map((email) => email.trim().toLowerCase()));
 
 export const ADMIN_EMAIL = ADMIN_EMAIL_CONFIG.trim().toLowerCase();
-export const isAdminEmail = (email) => email?.trim().toLowerCase() === ADMIN_EMAIL;
+export const isAdminEmail = (email) => ADMIN_EMAILS.has(email?.trim().toLowerCase());
 export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 

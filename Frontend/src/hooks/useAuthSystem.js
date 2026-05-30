@@ -27,6 +27,7 @@ export function useAuthSystem(toast) {
     setUser(data.user);
     setAuthOpen(false);
     setAuthNote('');
+    if (isAdminEmail(data.user?.email)) location.hash = '#/admin';
     toast?.showToast?.('Welcome back. You are signed in.', 'success');
   };
 

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { products as seedProducts } from './data/products';
 import { isAdminEmail, isSupabaseConfigured, supaAuth, supaProducts } from './libSupabaseRest';
 import { useToast } from './context/ToastContext.jsx';
-import { useOrders } from './context/OrderContext.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import Home from './Pages/Home/Home.jsx';
 import Shop from './Pages/Shop/Shop.jsx';
@@ -61,6 +60,7 @@ function useAuthSystem(toast) {
     setUser(data.user);
     setAuthOpen(false);
     setAuthNote('');
+    if (isAdminEmail(data.user?.email)) location.hash = '#/admin';
     toast?.showToast?.('Welcome back. You are signed in.', 'success');
   };
 
@@ -164,12 +164,12 @@ function useCart(auth, toast) {
   return { cart, add, setQty, clear, subtotal, count: cart.reduce((sum, item) => sum + item.qty, 0) };
 }
 
-function Nav({ route, setRoute, auth, cart, theme, orderCount }) {
+function Nav({ route, setRoute, auth, cart, theme }) {
   const [open, setOpen] = useState(false);
   const link = (path) => { setRoute(path); setOpen(false); };
   const navs = [['/', 'HOME'], ['/about', 'ABOUT'], ['/contact', 'CONTACT'], ['/shop', 'SHOP']];
 
-  return <header className="nav"><button className="brand" onClick={() => link('/')}>OME<span>Electrical</span></button><button className="hamb" onClick={() => setOpen(!open)}>{open ? 'x' : 'menu'}</button><nav className={open ? 'open' : ''}>{navs.map(([path, label]) => <button className={route === path ? 'active' : ''} onClick={() => link(path)} key={path}>{label}</button>)}{auth.isAdmin && <button className={route === '/admin' ? 'active admin-pill' : ''} onClick={() => link('/admin')}>ADMIN</button>}<button onClick={theme.toggleTheme}>{theme.theme === 'dark' ? 'Light' : 'Dark'}</button>{auth.isAdmin ? <button className={`orders-nav-button ${route === '/orders' ? 'active' : ''}`} onClick={() => link('/orders')}><span className="nav-count-badge">{orderCount}</span>ORDERS</button> : <>{auth.user && <button className={route === '/my-orders' ? 'active' : ''} onClick={() => link('/my-orders')}>My Orders</button>}<button onClick={() => link('/cart')}>Cart ({cart.count})</button></>}{auth.user ? <button onClick={auth.logout}>Logout</button> : <button className="login" onClick={() => auth.setAuthOpen(true)}>Login</button>}</nav></header>;
+  return <header className="nav"><button className="brand" onClick={() => link('/')}>OME<span>Electrical</span></button><button className="hamb" onClick={() => setOpen(!open)}>{open ? 'x' : 'menu'}</button><nav className={open ? 'open' : ''}>{navs.map(([path, label]) => <button className={route === path ? 'active' : ''} onClick={() => link(path)} key={path}>{label}</button>)}{auth.isAdmin && <button className={route === '/admin' ? 'active admin-pill' : ''} onClick={() => link('/admin')}>ADMIN</button>}<button onClick={theme.toggleTheme}>{theme.theme === 'dark' ? 'Light' : 'Dark'}</button>{!auth.isAdmin && <>{auth.user && <button className={route === '/my-orders' ? 'active' : ''} onClick={() => link('/my-orders')}>My Orders</button>}<button onClick={() => link('/cart')}>Cart ({cart.count})</button></>}{auth.user ? <button onClick={auth.logout}>Logout</button> : <button className="login" onClick={() => auth.setAuthOpen(true)}>Login</button>}</nav></header>;
 }
 
 export default function App() {
@@ -179,7 +179,6 @@ export default function App() {
   const auth = useAuthSystem(toast);
   const store = useProducts(toast);
   const cart = useCart(auth, toast);
-  const orders = useOrders();
 
   useEffect(() => {
     const handleHashChange = () => setRoute(location.hash.replace('#', '') || '/');
@@ -192,5 +191,5 @@ export default function App() {
     setRoute(path);
   };
 
-  return <><Nav route={route} setRoute={go} auth={auth} cart={cart} theme={theme} orderCount={orders?.orders?.length || 0} />{route === '/' && <Home setRoute={go} />}{route === '/shop' && <Shop products={store.products} cart={cart} />}{route === '/cart' && <Cart cart={cart} setRoute={go} auth={auth} />}{route === '/checkout' && <Checkout cart={cart} auth={auth} />}{route === '/admin' && <Admin auth={auth} {...store} />}{route === '/orders' && <Orders auth={auth} />}{route === '/my-orders' && <MyOrders auth={auth} />}{route === '/about' && <About />}{route === '/contact' && <Contact />}<footer>© OME Electrical Company - Supabase-ready admin commerce</footer><AuthModal auth={auth} /></>;
+  return <><Nav route={route} setRoute={go} auth={auth} cart={cart} theme={theme} />{route === '/' && <Home setRoute={go} />}{route === '/shop' && <Shop products={store.products} cart={cart} />}{route === '/cart' && <Cart cart={cart} setRoute={go} auth={auth} />}{route === '/checkout' && <Checkout cart={cart} auth={auth} />}{route === '/admin' && <Admin auth={auth} {...store} />}{route === '/orders' && <Orders auth={auth} />}{route === '/my-orders' && <MyOrders auth={auth} />}{route === '/about' && <About />}{route === '/contact' && <Contact />}<footer>© OME Electrical Company - Supabase-ready admin commerce</footer><AuthModal auth={auth} /></>;
 }
