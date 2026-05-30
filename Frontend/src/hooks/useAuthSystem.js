@@ -39,8 +39,6 @@ export function useAuthSystem(toast) {
     toast?.showToast?.('Account created. You are ready to shop.', 'success');
   };
 
-  const recover = (email) => supaAuth.recover(email);
-
   const logout = () => {
     supaAuth.logout();
     setUser(null);
@@ -48,5 +46,5 @@ export function useAuthSystem(toast) {
     toast?.showToast?.('Logged out successfully.', 'info');
   };
 
-  return { user, isAdmin, authOpen, setAuthOpen, authMode, setAuthMode, authNote, requireLogin, login, signup, recover, logout, cancelAuth };
+  return { user, isAdmin, authOpen, setAuthOpen, authMode, setAuthMode, authNote, requireLogin, login, signup, logout, cancelAuth };
 }

@@ -1,7 +1,6 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const PRODUCTS_TABLE = import.meta.env.VITE_SUPABASE_PRODUCTS_TABLE || 'products';
-const REDIRECT_BASE_URL = import.meta.env.VITE_SITE_URL || window.location.origin;
 
 const DEFAULT_ADMIN_EMAIL = 'omeelectrical28@gmail.com';
 const ADMIN_EMAIL_CONFIG = import.meta.env.VITE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
@@ -55,6 +54,7 @@ const authToken = () => {
 };
 
 const tablePath = (query = '') => `/rest/v1/${encodeURIComponent(PRODUCTS_TABLE)}${query}`;
+const cleanEmail = (email) => email.trim().toLowerCase();
 
 async function refreshSession() {
   const refreshToken = readSession()?.refresh_token;
@@ -94,23 +94,26 @@ async function request(path, options = {}, retry = true) {
   }
   if (!res.ok) {
     const message = data?.msg || data?.message || data?.error_description || data?.error || res.statusText || 'Request failed';
-    throw new Error(`${message} (${res.status})`);
+    const error = new Error(`${message} (${res.status})`);
+    error.status = res.status;
+    throw error;
   }
   return data;
 }
 
 export const supaAuth = {
   async login(email, password) {
+    const normalizedEmail = cleanEmail(email);
     let data;
     try {
       data = await request('/auth/v1/token?grant_type=password', {
         method: 'POST',
         headers: headers(),
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
       });
     } catch (error) {
       if (/invalid login credentials/i.test(error.message || '')) {
-        throw new Error('We could not sign you in. If this email is already registered, use the original password or reset it.');
+        throw new Error('Email or password is incorrect. If you already signed up, use the same password or reset it.');
       }
       throw error;
     }
@@ -118,33 +121,22 @@ export const supaAuth = {
     return data;
   },
   async signup(name, email, password) {
+    const normalizedEmail = cleanEmail(email);
     let data;
     try {
       data = await request('/auth/v1/signup', {
         method: 'POST',
         headers: headers(),
-        body: JSON.stringify({ email, password, data: { full_name: name } }),
+        body: JSON.stringify({ email: normalizedEmail, password, data: { full_name: name } }),
       });
     } catch (error) {
       if (/user already registered/i.test(error.message || '')) {
-        try {
-          return await this.login(email, password);
-        } catch {
-          throw new Error('This email already has an account. Please login with the original password or reset it.');
-        }
+        throw new Error('This email is already registered. Login with the password you used before, or reset it.');
       }
       throw error;
     }
     saveSession(data);
     return data;
-  },
-  async recover(email) {
-    await request('/auth/v1/recover', {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify({ email, redirect_to: REDIRECT_BASE_URL }),
-    });
-    return true;
   },
   session() {
     return readSession();
