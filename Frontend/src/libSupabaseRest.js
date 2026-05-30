@@ -76,11 +76,19 @@ async function request(path, options = {}, retry = true) {
 
 export const supaAuth = {
   async login(email, password) {
-    const data = await request('/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify({ email, password }),
-    });
+    let data;
+    try {
+      data = await request('/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ email, password }),
+      });
+    } catch (error) {
+      if (/invalid login credentials/i.test(error.message || '')) {
+        throw new Error("You don't have an account with us. Create one.");
+      }
+      throw error;
+    }
     saveSession(data);
     return data;
   },
