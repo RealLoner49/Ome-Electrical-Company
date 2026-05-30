@@ -2,7 +2,11 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const PRODUCTS_TABLE = import.meta.env.VITE_SUPABASE_PRODUCTS_TABLE || 'products';
 
-export const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || 'admin@example.com').toLowerCase();
+const DEFAULT_ADMIN_EMAIL = 'omeelectrical28@gmail.com';
+const ADMIN_EMAIL_CONFIG = import.meta.env.VITE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
+
+export const ADMIN_EMAIL = ADMIN_EMAIL_CONFIG.trim().toLowerCase();
+export const isAdminEmail = (email) => email?.trim().toLowerCase() === ADMIN_EMAIL;
 export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 

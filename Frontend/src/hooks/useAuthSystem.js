@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ADMIN_EMAIL, supaAuth } from '../libSupabaseRest';
+import { isAdminEmail, supaAuth } from '../libSupabaseRest';
 
 export function useAuthSystem(toast) {
   const [user, setUser] = useState(() => supaAuth.user());
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [authNote, setAuthNote] = useState('');
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = isAdminEmail(user?.email);
 
   const requireLogin = (message = 'Please login first to continue.') => {
     if (user) return true;

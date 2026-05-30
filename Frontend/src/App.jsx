@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { products as seedProducts } from './data/products';
-import { ADMIN_EMAIL, isSupabaseConfigured, supaAuth, supaProducts } from './libSupabaseRest';
+import { isAdminEmail, isSupabaseConfigured, supaAuth, supaProducts } from './libSupabaseRest';
 import { useToast } from './context/ToastContext.jsx';
 import { useOrders } from './context/OrderContext.jsx';
 import AuthModal from './components/AuthModal.jsx';
@@ -40,7 +40,7 @@ function useAuthSystem(toast) {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [authNote, setAuthNote] = useState('');
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = isAdminEmail(user?.email);
 
   const requireLogin = (message = 'Please login first to continue.') => {
     if (user) return true;
