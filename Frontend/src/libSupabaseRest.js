@@ -1,6 +1,7 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const PRODUCTS_TABLE = import.meta.env.VITE_SUPABASE_PRODUCTS_TABLE || 'products';
+const REDIRECT_BASE_URL = import.meta.env.VITE_SITE_URL || window.location.origin;
 
 const DEFAULT_ADMIN_EMAIL = 'omeelectrical28@gmail.com';
 const ADMIN_EMAIL_CONFIG = import.meta.env.VITE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
@@ -109,7 +110,7 @@ export const supaAuth = {
       });
     } catch (error) {
       if (/invalid login credentials/i.test(error.message || '')) {
-        throw new Error('We could not sign you in. Check your email and password, or create an account if you are new.');
+        throw new Error('We could not sign you in. If this email is already registered, use the original password or reset it.');
       }
       throw error;
     }
@@ -126,12 +127,24 @@ export const supaAuth = {
       });
     } catch (error) {
       if (/user already registered/i.test(error.message || '')) {
-        throw new Error('This email already has an account. Please login instead.');
+        try {
+          return await this.login(email, password);
+        } catch {
+          throw new Error('This email already has an account. Please login with the original password or reset it.');
+        }
       }
       throw error;
     }
     saveSession(data);
     return data;
+  },
+  async recover(email) {
+    await request('/auth/v1/recover', {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ email, redirect_to: REDIRECT_BASE_URL }),
+    });
+    return true;
   },
   session() {
     return readSession();
