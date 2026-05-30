@@ -187,7 +187,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (auth.isAdmin && ['/', '/my-orders', '/orders', '/cart', '/checkout'].includes(route)) {
+    if (auth.isAdmin && ['/my-orders', '/orders', '/cart', '/checkout'].includes(route)) {
       location.hash = '#/admin';
       setRoute('/admin');
     }
