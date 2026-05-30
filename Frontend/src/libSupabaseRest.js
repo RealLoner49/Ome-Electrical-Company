@@ -8,10 +8,22 @@ const ADMIN_EMAILS = new Set([
   ADMIN_EMAIL_CONFIG,
   DEFAULT_ADMIN_EMAIL,
   'omeeletrical28@gmail.com',
+  'omeeletical28@gmail.com',
 ].map((email) => email.trim().toLowerCase()));
 
 export const ADMIN_EMAIL = ADMIN_EMAIL_CONFIG.trim().toLowerCase();
-export const isAdminEmail = (email) => ADMIN_EMAILS.has(email?.trim().toLowerCase());
+export const emailAddress = (userOrEmail) => {
+  if (typeof userOrEmail === 'string') return userOrEmail;
+  return userOrEmail?.email
+    || userOrEmail?.user_metadata?.email
+    || userOrEmail?.identities?.[0]?.identity_data?.email
+    || '';
+};
+export const isAdminEmail = (userOrEmail) => {
+  const email = emailAddress(userOrEmail).trim().toLowerCase();
+  const [name, domain] = email.split('@');
+  return ADMIN_EMAILS.has(email) || (domain === 'gmail.com' && /^omee?lect?r?ical28$/.test(name));
+};
 export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
 export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 

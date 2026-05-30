@@ -39,7 +39,7 @@ function useAuthSystem(toast) {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [authNote, setAuthNote] = useState('');
-  const isAdmin = isAdminEmail(user?.email);
+  const isAdmin = isAdminEmail(user);
 
   const requireLogin = (message = 'Please login first to continue.') => {
     if (user) return true;
@@ -60,7 +60,7 @@ function useAuthSystem(toast) {
     setUser(data.user);
     setAuthOpen(false);
     setAuthNote('');
-    if (isAdminEmail(data.user?.email)) location.hash = '#/admin';
+    if (isAdminEmail(data.user)) location.hash = '#/admin';
     toast?.showToast?.('Welcome back. You are signed in.', 'success');
   };
 
@@ -185,6 +185,13 @@ export default function App() {
     addEventListener('hashchange', handleHashChange);
     return () => removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  useEffect(() => {
+    if (auth.isAdmin && ['/', '/my-orders', '/orders', '/cart', '/checkout'].includes(route)) {
+      location.hash = '#/admin';
+      setRoute('/admin');
+    }
+  }, [auth.isAdmin, route]);
 
   const go = (path) => {
     location.hash = path;
