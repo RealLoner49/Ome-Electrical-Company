@@ -4,12 +4,15 @@ const PRODUCTS_TABLE = import.meta.env.VITE_SUPABASE_PRODUCTS_TABLE || 'products
 
 const DEFAULT_ADMIN_EMAIL = 'omeelectrical28@gmail.com';
 const ADMIN_EMAIL_CONFIG = import.meta.env.VITE_ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
-const ADMIN_EMAILS = new Set([
-  ADMIN_EMAIL_CONFIG,
+const ADMIN_EMAILS = new Set(ADMIN_EMAIL_CONFIG.split(',')
+  .concat([
   DEFAULT_ADMIN_EMAIL,
+  'omeelectricalco@gmail.com',
   'omeeletrical28@gmail.com',
   'omeeletical28@gmail.com',
-].map((email) => email.trim().toLowerCase()));
+  ])
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean));
 
 export const ADMIN_EMAIL = ADMIN_EMAIL_CONFIG.trim().toLowerCase();
 export const emailAddress = (userOrEmail) => {
