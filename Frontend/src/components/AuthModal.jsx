@@ -28,6 +28,9 @@ export default function AuthModal({ auth }) {
       if (auth.authMode === 'login') await auth.login(email, password);
       else await auth.signup(name, email, password);
     } catch (error) {
+      if (/already has an account/i.test(error.message || '')) {
+        auth.setAuthMode('login');
+      }
       setErr(error.message);
       toast?.showToast?.(error.message || 'Authentication failed.', 'error');
     } finally {

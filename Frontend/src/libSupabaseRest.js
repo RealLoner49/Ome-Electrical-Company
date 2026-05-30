@@ -109,7 +109,7 @@ export const supaAuth = {
       });
     } catch (error) {
       if (/invalid login credentials/i.test(error.message || '')) {
-        throw new Error("You don't have an account with us. Create one.");
+        throw new Error('We could not sign you in. Check your email and password, or create an account if you are new.');
       }
       throw error;
     }
@@ -117,11 +117,19 @@ export const supaAuth = {
     return data;
   },
   async signup(name, email, password) {
-    const data = await request('/auth/v1/signup', {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify({ email, password, data: { full_name: name } }),
-    });
+    let data;
+    try {
+      data = await request('/auth/v1/signup', {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ email, password, data: { full_name: name } }),
+      });
+    } catch (error) {
+      if (/user already registered/i.test(error.message || '')) {
+        throw new Error('This email already has an account. Please login instead.');
+      }
+      throw error;
+    }
     saveSession(data);
     return data;
   },
