@@ -7,6 +7,15 @@ function uid(prefix = 'OME') {
   return `${prefix}-${Math.random().toString(36).slice(2, 7).toUpperCase()}-${Date.now().toString().slice(-5)}`;
 }
 
+function priceInput(value) {
+  if (value === '' || value == null) return '';
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function priceNumber(value) {
+  return Number(String(value).replace(/,/g, '')) || 0;
+}
+
 export default function Admin({ auth, products, createProduct, updateProduct, deleteProduct }) {
   const toast = useToast();
 
@@ -67,7 +76,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
     try {
       const payload = {
         ...form,
-        price: Number(form.price),
+        price: priceNumber(form.price),
         stock: Number(form.stock),
         product_id: form.product_id || uid('PRD'),
       };
@@ -136,7 +145,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
     setForm({
       product_id: product.product_id || product.id || '',
       name: product.name || '',
-      price: product.price || '',
+      price: priceInput(product.price),
       category: product.category || 'cables-wires',
       stock: product.stock ?? 10,
       badge: product.badge || 'New',
@@ -232,10 +241,13 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           <div className="admin-form-row">
             <input
               required
-              type="number"
+              inputMode="numeric"
               placeholder="Price"
               value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^\d,]/g, '');
+                setForm({ ...form, price: value });
+              }}
             />
 
             <input

@@ -83,7 +83,7 @@ function useAuthSystem(toast) {
 }
 
 function useProducts(toast) {
-  const [items, setItems] = useState(seedProducts);
+  const [items, setItems] = useState(() => (isSupabaseConfigured ? [] : seedProducts));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -93,7 +93,7 @@ function useProducts(toast) {
     try {
       setError('');
       const supabaseItems = await supaProducts.list();
-      setItems(supabaseItems.length ? supabaseItems : seedProducts);
+      setItems(supabaseItems);
     } catch (error) {
       console.warn(error.message);
       setError(error.message);

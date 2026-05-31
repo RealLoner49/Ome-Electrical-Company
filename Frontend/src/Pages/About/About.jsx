@@ -92,6 +92,35 @@ export default function About() {
         </p>
       </section>
 
+      <section className="about-members">
+        <div className="about-members-head">
+          <h2>Meet the members</h2>
+          <p>The people behind the site.</p>
+        </div>
+
+        <div className="about-member-grid">
+          {members.map((member) => (
+            <article className="about-member-card" key={member.name}>
+              <div className="about-member-photo">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none';
+                  }}
+                />
+                <span>{member.initials}</span>
+              </div>
+              <div>
+                <h3>{member.name}</h3>
+                <b>{member.role}</b>
+                <p>{member.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="about-timeline">
         {timeline.map((item, index) => (
           <article key={item.title}>
@@ -133,35 +162,6 @@ export default function About() {
             <p>{item.text}</p>
           </article>
         ))}
-      </section>
-
-      <section className="about-members">
-        <div className="about-members-head">
-          <h2>Meet the members</h2>
-          <p>The people behind the site.</p>
-        </div>
-
-        <div className="about-member-grid">
-          {members.map((member) => (
-            <article className="about-member-card" key={member.name}>
-              <div className="about-member-photo">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  onError={(event) => {
-                    event.currentTarget.style.display = 'none';
-                  }}
-                />
-                <span>{member.initials}</span>
-              </div>
-              <div>
-                <h3>{member.name}</h3>
-                <b>{member.role}</b>
-                <p>{member.text}</p>
-              </div>
-            </article>
-          ))}
-        </div>
       </section>
     </main>
   );

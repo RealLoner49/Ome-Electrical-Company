@@ -104,8 +104,70 @@
   height: 255px;
 }
 
+.shop-image-button {
+  width: 100%;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: zoom-in;
+  text-align: left;
+}
+
+.shop-image-button:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .shop-card button {
   width: 100%;
+}
+
+.image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(3, 7, 18, 0.72);
+}
+
+.image-modal-frame {
+  position: relative;
+  width: min(92vw, 920px);
+  max-height: 88vh;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.image-modal-frame img {
+  max-width: 100%;
+  max-height: calc(88vh - 36px);
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.image-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  box-shadow: none;
 }
 
 .empty-state {
