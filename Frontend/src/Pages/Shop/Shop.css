@@ -94,6 +94,8 @@
 
 .shop-grid {
   position: relative;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  align-items: start;
 }
 
 .shop-card {
@@ -101,7 +103,22 @@
 }
 
 .shop-card .img {
-  height: 255px;
+  height: 380px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(238, 244, 255, 0.9)),
+    var(--panel2);
+}
+
+.shop-card .img img {
+  object-fit: contain;
+  padding: 12px;
+  background: transparent;
+}
+
+:root[data-theme="dark"] .shop-card .img {
+  background:
+    radial-gradient(circle at center, rgba(34, 211, 238, 0.08), transparent 58%),
+    rgba(255, 255, 255, 0.035);
 }
 
 .shop-image-button {
@@ -282,7 +299,7 @@
   }
 
   .shop-card .img {
-    height: 220px;
+    height: 300px;
   }
 
   .image-modal {
