@@ -55,6 +55,8 @@ const authToken = () => {
 
 const tablePath = (query = '') => `/rest/v1/${encodeURIComponent(PRODUCTS_TABLE)}${query}`;
 const cleanEmail = (email) => email.trim().toLowerCase();
+const DEFAULT_PRODUCT_IMAGE = '/images/new-arrival-hero.svg';
+const GALLERY_SPEC_KEY = '__galleryImages';
 
 async function refreshSession() {
   const refreshToken = readSession()?.refresh_token;
@@ -149,40 +151,74 @@ export const supaAuth = {
   },
 };
 
-const normalizeProduct = (p) => ({
-  id: p.id || p.product_id,
-  product_id: p.product_id || p.id,
-  name: p.name || '',
-  category: p.category || 'general',
-  price: Number(p.price || 0),
-  oldPrice: Number(p.oldPrice || p.old_price || 0),
-  rating: Number(p.rating || 4.8),
-  badge: p.badge || 'In stock',
-  stock: Number(p.stock ?? 10),
-  image: p.image || p.image_url || '/images/new-arrival-hero.svg',
-  description: p.description || '',
-  tags: Array.isArray(p.tags) ? p.tags : [],
-  specs: p.specs || {},
-  sku: p.sku || '',
-  eta: p.eta || '',
-});
+const galleryImages = (product) => {
+  const imageList = Array.isArray(product.images) ? product.images : [];
+  const specList = Array.isArray(product.specs?.[GALLERY_SPEC_KEY]) ? product.specs[GALLERY_SPEC_KEY] : [];
+  const realImages = [...imageList, ...specList, product.image, product.image_url].filter(
+    (image) => image && image !== DEFAULT_PRODUCT_IMAGE
+  );
+  const sourceImages = realImages.length ? realImages : [DEFAULT_PRODUCT_IMAGE];
+  return Array.from(new Set(sourceImages)).slice(0, 3);
+};
 
-const productPayload = (product) => ({
-  product_id: product.product_id || product.id || crypto.randomUUID(),
-  name: product.name || '',
-  category: product.category || 'general',
-  price: Number(product.price || 0),
-  old_price: Number(product.oldPrice || product.old_price || 0),
-  badge: product.badge || 'In stock',
-  stock: Number.isFinite(Number(product.stock)) ? Number(product.stock) : 0,
-  image_url: product.image || product.image_url || '/images/new-arrival-hero.svg',
-  description: product.description || '',
-  rating: Number(product.rating || 4.8),
-  tags: Array.isArray(product.tags) ? product.tags : [],
-  specs: product.specs || {},
-  sku: product.sku || '',
-  eta: product.eta || '',
-});
+const visibleSpecs = (specs = {}) => {
+  const cleanSpecs = { ...specs };
+  delete cleanSpecs[GALLERY_SPEC_KEY];
+  return cleanSpecs;
+};
+
+const normalizeProduct = (p) => {
+  const images = galleryImages(p);
+
+  return {
+    id: p.id || p.product_id,
+    product_id: p.product_id || p.id,
+    name: p.name || '',
+    category: p.category || 'general',
+    price: Number(p.price || 0),
+    oldPrice: Number(p.oldPrice || p.old_price || 0),
+    rating: Number(p.rating || 4.8),
+    badge: p.badge || 'In stock',
+    stock: Number(p.stock ?? 10),
+    image: images[0],
+    images,
+    description: p.description || '',
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    specs: visibleSpecs(p.specs),
+    sku: p.sku || '',
+    eta: p.eta || '',
+  };
+};
+
+const productPayload = (product) => {
+  const images = galleryImages(product);
+
+  return {
+    product_id: product.product_id || product.id || crypto.randomUUID(),
+    name: product.name || '',
+    category: product.category || 'general',
+    price: Number(product.price || 0),
+    old_price: Number(product.oldPrice || product.old_price || 0),
+    badge: product.badge || 'In stock',
+    stock: Number.isFinite(Number(product.stock)) ? Number(product.stock) : 0,
+    image_url: images[0],
+    images,
+    description: product.description || '',
+    rating: Number(product.rating || 4.8),
+    tags: Array.isArray(product.tags) ? product.tags : [],
+    specs: { ...visibleSpecs(product.specs), [GALLERY_SPEC_KEY]: images },
+    sku: product.sku || '',
+    eta: product.eta || '',
+  };
+};
+
+const withoutImages = (payload) => {
+  const rest = { ...payload };
+  delete rest.images;
+  return rest;
+};
+
+const isMissingImagesColumn = (error) => /images.*column|column.*images/i.test(error?.message || '');
 
 export const supaProducts = {
   async list() {
@@ -191,16 +227,34 @@ export const supaProducts = {
   },
   async create(product) {
     const payload = productPayload(product);
-    const data = await request(tablePath(), {
-      method: 'POST', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(payload),
-    });
+    let data;
+    try {
+      data = await request(tablePath(), {
+        method: 'POST', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (!isMissingImagesColumn(error)) throw error;
+      const legacyPayload = withoutImages(payload);
+      data = await request(tablePath(), {
+        method: 'POST', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(legacyPayload),
+      });
+    }
     return normalizeProduct(data?.[0] || payload);
   },
   async update(id, product) {
     const payload = productPayload(product);
-    const data = await request(tablePath(`?id=eq.${encodeURIComponent(id)}`), {
-      method: 'PATCH', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(payload),
-    });
+    let data;
+    try {
+      data = await request(tablePath(`?id=eq.${encodeURIComponent(id)}`), {
+        method: 'PATCH', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (!isMissingImagesColumn(error)) throw error;
+      const legacyPayload = withoutImages(payload);
+      data = await request(tablePath(`?id=eq.${encodeURIComponent(id)}`), {
+        method: 'PATCH', headers: headers(authToken(), 'return=representation'), body: JSON.stringify(legacyPayload),
+      });
+    }
     return normalizeProduct(data?.[0] || payload);
   },
   async remove(id, productId) {

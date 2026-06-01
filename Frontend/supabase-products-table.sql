@@ -13,6 +13,7 @@ create table if not exists public.products (
   badge text not null default 'In stock',
   stock integer not null default 0,
   image_url text,
+  images jsonb not null default '[]'::jsonb,
   description text,
   tags jsonb not null default '[]'::jsonb,
   specs jsonb not null default '{}'::jsonb,
@@ -26,6 +27,7 @@ alter table public.products add column if not exists tags jsonb not null default
 alter table public.products add column if not exists specs jsonb not null default '{}'::jsonb;
 alter table public.products add column if not exists sku text;
 alter table public.products add column if not exists eta text;
+alter table public.products add column if not exists images jsonb not null default '[]'::jsonb;
 
 alter table public.products enable row level security;
 
@@ -106,3 +108,8 @@ on conflict (product_id) do update set
   specs = excluded.specs,
   sku = excluded.sku,
   eta = excluded.eta;
+
+update public.products
+set images = jsonb_build_array(image_url)
+where image_url is not null
+  and (images is null or jsonb_array_length(images) = 0);

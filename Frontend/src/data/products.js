@@ -19,6 +19,12 @@ export const categories = [
     hero: '/images/Electrician In Jamshedpur _ OOTS.jpg',
   },
   {
+    slug: 'touch-lights',
+    name: 'Touch Lights',
+    blurb: 'Tap-control lights for bedrooms, shelves, counters, and compact accent lighting.',
+    hero: '/images/new-arrival-hero.svg',
+  },
+  {
     slug: 'switches-sockets',
     name: 'Switches & Sockets',
     blurb: 'Clean finishing hardware with durability baked into every click.',
@@ -276,6 +282,25 @@ const rawProducts = [
       Color: 'Warm white',
       Power: '12V adapter',
       Use: 'Decor and ambience',
+    },
+  },
+  {
+    id: 'p-touch-light',
+    name: 'Touch Light',
+    category: 'touch-lights',
+    price: 9500,
+    oldPrice: 12000,
+    rating: 4.5,
+    badge: 'New',
+    tags: ['touch', 'lighting', 'portable'],
+    image: '/images/new-arrival-hero.svg',
+    images: ['/images/new-arrival-hero.svg'],
+    description: 'Compact touch light for quick bedside, cabinet, shelf, and emergency lighting.',
+    specs: {
+      Control: 'Touch on/off',
+      Use: 'Bedroom, cabinet, and counter lighting',
+      Mount: 'Portable or adhesive mount',
+      Power: 'Battery or USB model options',
     },
   },
 
@@ -869,6 +894,7 @@ export const discountedProducts = products.filter((product) => product.oldPrice 
 export const groupedProducts = {
   cables: products.filter((product) => product.category === 'cables-wires'),
   lighting: products.filter((product) => product.category === 'lighting-fixtures'),
+  touchLights: products.filter((product) => product.category === 'touch-lights'),
   sockets: products.filter((product) => product.category === 'switches-sockets'),
   powerDistribution: products.filter((product) => product.category === 'power-distribution'),
   extensions: products.filter((product) => product.category === 'extensions-plugs'),

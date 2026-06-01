@@ -16,6 +16,16 @@ function priceNumber(value) {
   return Number(String(value).replace(/,/g, '')) || 0;
 }
 
+const DEFAULT_PRODUCT_IMAGE = '/images/new-arrival-hero.svg';
+const MAX_PRODUCT_IMAGES = 3;
+
+function productImages(product, { includeFallback = false } = {}) {
+  const images = Array.isArray(product.images) ? product.images : [];
+  const realImages = [...images, product.image, product.image_url].filter((image) => image && image !== DEFAULT_PRODUCT_IMAGE);
+  const uniqueImages = Array.from(new Set(realImages)).slice(0, MAX_PRODUCT_IMAGES);
+  return uniqueImages.length || !includeFallback ? uniqueImages : [DEFAULT_PRODUCT_IMAGE];
+}
+
 export default function Admin({ auth, products, createProduct, updateProduct, deleteProduct }) {
   const toast = useToast();
 
@@ -26,7 +36,8 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
     category: 'cables-wires',
     stock: 10,
     badge: 'New',
-    image: '/images/new-arrival-hero.svg',
+    image: DEFAULT_PRODUCT_IMAGE,
+    images: [],
     description: '',
   };
 
@@ -79,6 +90,8 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
         price: priceNumber(form.price),
         stock: Number(form.stock),
         product_id: form.product_id || uid('PRD'),
+        image: productImages(form)[0] || DEFAULT_PRODUCT_IMAGE,
+        images: productImages(form),
       };
 
       if (editId) {
@@ -149,7 +162,8 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
       category: product.category || 'cables-wires',
       stock: product.stock ?? 10,
       badge: product.badge || 'New',
-      image: product.image || '/images/new-arrival-hero.svg',
+      image: product.image || DEFAULT_PRODUCT_IMAGE,
+      images: productImages(product),
       description: product.description || '',
     });
 
@@ -157,12 +171,35 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
   }
 
   function pickImage(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const currentImages = productImages(form);
+    const openSlots = MAX_PRODUCT_IMAGES - currentImages.length;
+    const files = Array.from(event.target.files || []).slice(0, openSlots);
+    if (!files.length) return;
 
-    const reader = new FileReader();
-    reader.onload = () => setForm((current) => ({ ...current, image: reader.result }));
-    reader.readAsDataURL(file);
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          })
+      )
+    ).then((newImages) =>
+      setForm((current) => {
+        const images = [...productImages(current), ...newImages].slice(0, MAX_PRODUCT_IMAGES);
+        return { ...current, image: images[0], images };
+      })
+    );
+
+    event.target.value = '';
+  }
+
+  function removeImage(index) {
+    setForm((current) => {
+      const images = productImages(current).filter((_, imageIndex) => imageIndex !== index);
+      return { ...current, image: images[0] || DEFAULT_PRODUCT_IMAGE, images };
+    });
   }
 
   return (
@@ -270,11 +307,20 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           </select>
 
           <div className="admin-image-picker">
-            <input id="admin-product-image" type="file" accept="image/*" onChange={pickImage} />
+            <input id="admin-product-image" type="file" accept="image/*" multiple onChange={pickImage} />
             <label htmlFor="admin-product-image">
               {form.image ? <img src={form.image} alt="Product preview" /> : <span>+</span>}
-              <b>{form.image ? 'Change product image' : 'Add product image'}</b>
+              <b>{form.image ? 'Change product images' : 'Add product images'}</b>
+              <small>Select up to 3 pictures</small>
             </label>
+            <div className="admin-image-thumbs">
+              {productImages(form).map((image, index) => (
+                <button type="button" key={`${image}-${index}`} onClick={() => removeImage(index)} aria-label={`Remove product image ${index + 1}`}>
+                  <img src={image} alt={`Product preview ${index + 1}`} />
+                  <span>x</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <textarea
@@ -306,7 +352,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           <div className="admin-list">
             {list.map((p) => (
               <div className="admin-item admin-item-pro" key={p.id}>
-                <img src={p.image} alt={p.name} />
+                <img src={productImages(p, { includeFallback: true })[0]} alt={p.name} />
 
                 <div>
                   <b>{p.name}</b>
