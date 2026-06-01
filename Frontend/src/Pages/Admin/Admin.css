@@ -1,6 +1,7 @@
 .admin-page {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .admin-page::before {
@@ -15,6 +16,19 @@
   pointer-events: none;
 }
 
+.admin-page::after {
+  content: "";
+  position: absolute;
+  inset: 18vh auto auto -120px;
+  z-index: -1;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 140, 255, 0.2), transparent 68%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
 .admin-gate,
 .admin-hero {
   min-height: 58vh;
@@ -23,6 +37,10 @@
   gap: 32px;
   align-items: center;
   position: relative;
+}
+
+.admin-hero {
+  padding: 34px 0 18px;
 }
 
 .admin-gate h1,
@@ -52,11 +70,37 @@
     linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(23, 32, 51, 0.72)),
     radial-gradient(circle at top right, rgba(34, 211, 238, 0.26), transparent 50%);
   box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-lock::before,
+.admin-status::before {
+  content: "";
+  position: absolute;
+  inset: 20px 20px auto auto;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.9), rgba(34, 211, 238, 0.9));
+  box-shadow: 0 0 0 18px rgba(34, 211, 238, 0.08);
+}
+
+.admin-lock::after,
+.admin-status::after {
+  content: "";
+  position: absolute;
+  inset: auto 26px 26px auto;
+  width: 86px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.9));
 }
 
 :root[data-theme="light"] .admin-lock,
 :root[data-theme="light"] .admin-status,
-:root[data-theme="light"] .admin-metrics article {
+:root[data-theme="light"] .admin-metrics article,
+:root[data-theme="light"] .admin-form,
+:root[data-theme="light"] .admin-products {
   background: rgba(255, 255, 255, 0.84);
 }
 
@@ -84,6 +128,22 @@
   padding: 22px;
   background: linear-gradient(145deg, rgba(17, 24, 39, 0.88), rgba(23, 32, 51, 0.72));
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: 0.25s ease;
+}
+
+.admin-metrics article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--brand), var(--brand2));
+}
+
+.admin-metrics article:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34, 211, 238, 0.32);
 }
 
 .admin-metrics b {
@@ -125,11 +185,32 @@
 .admin-layout-pro {
   grid-template-columns: minmax(340px, 0.55fr) minmax(0, 1fr);
   align-items: start;
+  gap: 26px;
 }
 
 .admin-form,
 .admin-products {
   border-radius: 28px;
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(34, 211, 238, 0.16);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    var(--panel);
+}
+
+.admin-form::before,
+.admin-products::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand), var(--brand2), rgba(52, 211, 153, 0.92));
+}
+
+.admin-form {
+  position: sticky;
+  top: 96px;
 }
 
 .admin-form-head,
@@ -144,6 +225,30 @@
 .admin-search h3 {
   margin: 0;
   font-size: 28px;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea,
+.admin-products input {
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+    var(--panel2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus,
+.admin-products input:focus {
+  border-color: rgba(34, 211, 238, 0.72);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.12);
+  transform: translateY(-1px);
+}
+
+.admin-form textarea {
+  resize: vertical;
 }
 
 .admin-form-row {
@@ -173,6 +278,7 @@
   overflow: hidden;
   text-align: center;
   transition: 0.25s;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
 }
 
 .admin-image-picker label:hover {
@@ -208,6 +314,7 @@
   width: 100%;
   height: 190px;
   object-fit: cover;
+  filter: saturate(1.04) contrast(1.02);
 }
 
 .admin-image-thumbs {
@@ -227,10 +334,13 @@
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.06);
   box-shadow: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .admin-image-thumbs button:hover {
   transform: translateY(-1px);
+  outline-color: rgba(34, 211, 238, 0.5);
 }
 
 .admin-image-thumbs img {
@@ -248,11 +358,29 @@
   height: 24px;
   font-size: 14px;
   background: rgba(15, 23, 42, 0.86);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.24);
 }
 
 .admin-list {
   display: grid;
   gap: 12px;
+  max-height: 680px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.admin-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.admin-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--brand), var(--brand2));
+  border-radius: 999px;
 }
 
 .admin-item-pro {
@@ -261,12 +389,55 @@
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.055);
+  transition: 0.22s ease;
+}
+
+.admin-item-pro:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34, 211, 238, 0.28);
+  background: rgba(255, 255, 255, 0.085);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
 }
 
 .admin-item-pro img {
   width: 72px;
   height: 72px;
   border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+}
+
+.admin-item-pro b {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-item-pro small {
+  color: var(--muted);
+}
+
+.admin-item-pro button {
+  min-height: 44px;
+  padding-inline: 14px;
+}
+
+.admin-item-pro .danger {
+  background: linear-gradient(135deg, #fb7185, var(--danger));
+}
+
+.admin-form > button {
+  min-height: 56px;
+  box-shadow: 0 18px 34px rgba(34, 211, 238, 0.18);
+}
+
+.admin-form .ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: none;
 }
 
 .admin-shortcut {
@@ -285,6 +456,10 @@
   .admin-hero,
   .admin-layout-pro {
     grid-template-columns: 1fr;
+  }
+
+  .admin-form {
+    position: static;
   }
 
   .admin-metrics {
@@ -311,8 +486,22 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-form,
+  .admin-products {
+    border-radius: 22px;
+  }
+
+  .admin-image-thumbs {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-image-thumbs img {
+    height: 92px;
+  }
+
   .admin-item-pro {
     grid-template-columns: 60px minmax(0, 1fr);
+    gap: 12px;
   }
 
   .admin-item-pro button {

@@ -96,10 +96,8 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
 
       if (editId) {
         await updateProduct(editId, payload);
-        toast?.showToast?.('Product updated successfully.', 'success');
       } else {
         await createProduct(payload);
-        toast?.showToast?.('Product added successfully.', 'success');
       }
 
       setForm(blank);
@@ -132,7 +130,6 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
 
     try {
       await deleteProduct(product.id, product.product_id);
-      toast?.showToast?.('Product deleted successfully.', 'success');
     } catch (error) {
       console.warn(error);
 
