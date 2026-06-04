@@ -18,12 +18,57 @@ function priceNumber(value) {
 
 const DEFAULT_PRODUCT_IMAGE = '/images/new-arrival-hero.svg';
 const MAX_PRODUCT_IMAGES = 3;
+const MAX_IMAGE_SIZE = 1200;
+const IMAGE_QUALITY = 0.82;
 
 function productImages(product, { includeFallback = false } = {}) {
   const images = Array.isArray(product.images) ? product.images : [];
   const realImages = [...images, product.image, product.image_url].filter((image) => image && image !== DEFAULT_PRODUCT_IMAGE);
   const uniqueImages = Array.from(new Set(realImages)).slice(0, MAX_PRODUCT_IMAGES);
   return uniqueImages.length || !includeFallback ? uniqueImages : [DEFAULT_PRODUCT_IMAGE];
+}
+
+function missingProductFields(product) {
+  const missing = [];
+
+  if (!String(product.product_id || '').trim()) missing.push('Product ID');
+  if (!String(product.name || '').trim()) missing.push('Product name');
+  if (priceNumber(product.price) <= 0) missing.push('Price');
+  if (String(product.stock ?? '').trim() === '' || Number(product.stock) < 0) missing.push('Stock');
+  if (!String(product.category || '').trim()) missing.push('Category');
+  if (!productImages(product).length) missing.push('Product image');
+  if (!String(product.description || '').trim()) missing.push('Description');
+
+  return missing;
+}
+
+function resizeProductImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onerror = () => reject(new Error('Image could not be read.'));
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onerror = () => reject(new Error('Image could not be loaded.'));
+      image.onload = () => {
+        const scale = Math.min(1, MAX_IMAGE_SIZE / Math.max(image.width, image.height));
+        const width = Math.max(1, Math.round(image.width * scale));
+        const height = Math.max(1, Math.round(image.height * scale));
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(image, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', IMAGE_QUALITY));
+      };
+
+      image.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function Admin({ auth, products, createProduct, updateProduct, deleteProduct }) {
@@ -82,6 +127,13 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
 
   async function save(event) {
     event.preventDefault();
+    const missing = missingProductFields(form);
+
+    if (missing.length) {
+      toast?.showToast?.(`Please complete: ${missing.join(', ')}.`, 'error');
+      return;
+    }
+
     setBusy(true);
 
     try {
@@ -173,21 +225,16 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
     const files = Array.from(event.target.files || []).slice(0, openSlots);
     if (!files.length) return;
 
-    Promise.all(
-      files.map(
-        (file) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-          })
+    Promise.all(files.map(resizeProductImage))
+      .then((newImages) =>
+        setForm((current) => {
+          const images = [...productImages(current), ...newImages].slice(0, MAX_PRODUCT_IMAGES);
+          return { ...current, image: images[0], images };
+        })
       )
-    ).then((newImages) =>
-      setForm((current) => {
-        const images = [...productImages(current), ...newImages].slice(0, MAX_PRODUCT_IMAGES);
-        return { ...current, image: images[0], images };
-      })
-    );
+      .catch(() => {
+        toast?.showToast?.('Image could not be prepared. Try another picture.', 'error');
+      });
 
     event.target.value = '';
   }
@@ -260,6 +307,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           </div>
 
           <input
+            required
             placeholder="Product ID"
             value={form.product_id || ''}
             onChange={(e) => setForm({ ...form, product_id: e.target.value })}
@@ -285,7 +333,9 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
             />
 
             <input
+              required
               type="number"
+              min="0"
               placeholder="Stock"
               value={form.stock}
               onChange={(e) => setForm({ ...form, stock: e.target.value })}
@@ -293,6 +343,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           </div>
 
           <select
+            required
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
           >
@@ -321,6 +372,7 @@ export default function Admin({ auth, products, createProduct, updateProduct, de
           </div>
 
           <textarea
+            required
             placeholder="Description"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}

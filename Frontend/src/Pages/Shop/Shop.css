@@ -9,9 +9,9 @@
   inset: 30px auto auto 4vw;
   width: 360px;
   height: 360px;
-  background: conic-gradient(from 120deg, rgba(34, 211, 238, 0.34), rgba(79, 140, 255, 0.1), rgba(52, 211, 153, 0.3), rgba(34, 211, 238, 0.34));
-  filter: blur(55px);
-  opacity: 0.8;
+  background: rgba(47, 156, 244, 0.1);
+  filter: blur(70px);
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -45,9 +45,7 @@
   padding: 24px;
   display: grid;
   align-content: end;
-  background:
-    linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(23, 32, 51, 0.76)),
-    radial-gradient(circle at top right, rgba(34, 211, 238, 0.28), transparent 48%);
+  background: rgba(17, 24, 39, 0.86);
   box-shadow: var(--shadow);
   overflow: hidden;
   position: relative;
@@ -65,7 +63,7 @@
   height: 58px;
   border-radius: 50%;
   background: var(--brand2);
-  box-shadow: 0 0 0 18px rgba(34, 211, 238, 0.1), 0 0 70px rgba(34, 211, 238, 0.45);
+  box-shadow: 0 0 0 14px rgba(34, 211, 238, 0.08), 0 0 38px rgba(34, 211, 238, 0.18);
 }
 
 .shop-console b {
@@ -95,18 +93,19 @@
 .shop-grid {
   position: relative;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  align-items: start;
+  align-items: stretch;
 }
 
 .shop-card {
   border-radius: 22px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .shop-card .img {
   height: 380px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(238, 244, 255, 0.9)),
-    var(--panel2);
+  background: #f8fafc;
 }
 
 .shop-card .img img {
@@ -116,9 +115,7 @@
 }
 
 :root[data-theme="dark"] .shop-card .img {
-  background:
-    radial-gradient(circle at center, rgba(34, 211, 238, 0.08), transparent 58%),
-    rgba(255, 255, 255, 0.035);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .shop-image-button {
@@ -140,6 +137,39 @@
 
 .shop-card button {
   width: 100%;
+}
+
+.shop-card .card-body {
+  min-height: 306px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.shop-card .card-body small {
+  min-height: 18px;
+}
+
+.shop-card .card-body h3 {
+  min-height: 64px;
+  margin: 6px 0 10px;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.shop-card .card-body p {
+  min-height: 84px;
+  margin: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.shop-card .price {
+  margin-top: auto;
 }
 
 .image-modal {
@@ -300,6 +330,14 @@
 
   .shop-card .img {
     height: 300px;
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-card .card-body {
+    min-height: 286px;
   }
 
   .image-modal {

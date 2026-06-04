@@ -28,15 +28,13 @@ export function useProducts(toast) {
   const createProduct = async (product) => {
     const clean = { ...product, id: product.id || uid('PROD'), product_id: product.product_id || product.id || uid('PRD') };
     const saved = isSupabaseConfigured ? await supaProducts.create(clean) : clean;
-    if (isSupabaseConfigured) await fetchProducts();
-    else setItems((current) => [saved, ...current]);
+    setItems((current) => [saved, ...current.filter((entry) => entry.id !== saved.id && entry.product_id !== saved.product_id)]);
     toast?.showToast?.(`${saved.name || 'Product'} added to products.`, 'success');
   };
 
   const updateProduct = async (id, product) => {
     const saved = isSupabaseConfigured ? await supaProducts.update(id, product) : { ...product, id };
-    if (isSupabaseConfigured) await fetchProducts();
-    else setItems((current) => current.map((entry) => (entry.id === id ? { ...entry, ...saved } : entry)));
+    setItems((current) => current.map((entry) => (entry.id === id || entry.product_id === saved.product_id ? { ...entry, ...saved } : entry)));
     toast?.showToast?.(`${saved.name || product.name || 'Product'} updated.`, 'success');
   };
 
