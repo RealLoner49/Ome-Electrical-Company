@@ -38,6 +38,21 @@ export default function Shop({ products, cart }) {
   const [preview, setPreview] = useState(null);
   const [previewIndex, setPreviewIndex] = useState(0);
 
+  useEffect(() => {
+    const savedTarget = sessionStorage.getItem('ome-shop-target');
+    if (!savedTarget) return;
+
+    try {
+      const target = JSON.parse(savedTarget);
+      if (target.category) setCat(target.category);
+      if (target.query) setQ(target.query);
+    } catch {
+      setCat('all');
+    } finally {
+      sessionStorage.removeItem('ome-shop-target');
+    }
+  }, []);
+
   const shown = products.filter(
     (p) =>
       (cat === 'all' || p.category === cat) &&

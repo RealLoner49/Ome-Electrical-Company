@@ -24,7 +24,7 @@
 .my-order-card,
 .my-orders-empty {
   border: 1px solid var(--line);
-  background: linear-gradient(145deg, var(--panel), var(--panel2));
+  background: rgba(17, 24, 39, 0.86);
   box-shadow: var(--shadow);
 }
 

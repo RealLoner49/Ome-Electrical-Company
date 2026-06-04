@@ -9,9 +9,9 @@
   inset: 35px 4vw auto auto;
   width: 330px;
   height: 330px;
-  background: conic-gradient(from 90deg, rgba(34, 211, 238, 0.45), rgba(79, 140, 255, 0.05), rgba(16, 185, 129, 0.35), rgba(34, 211, 238, 0.45));
-  filter: blur(45px);
-  opacity: 0.75;
+  background: rgba(47, 156, 244, 0.1);
+  filter: blur(68px);
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -26,6 +26,9 @@
 
 .contact-copy {
   max-width: 780px;
+  position: relative;
+  padding-left: 22px;
+  border-left: 4px solid var(--brand2);
 }
 
 .contact-copy h1 {
@@ -55,7 +58,7 @@
   min-height: 48px;
   border-radius: 999px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, var(--brand), var(--brand2));
+  background: #2f9cf4;
   color: #fff;
   text-decoration: none;
   font-weight: 900;
@@ -77,11 +80,24 @@
 }
 
 .contact-mini-stats div {
+  position: relative;
+  overflow: hidden;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.055);
   backdrop-filter: blur(16px);
+}
+
+.contact-mini-stats div::before,
+.contact-panel::before,
+.contact-channel::before,
+.contact-technician-note::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--brand2);
 }
 
 .contact-mini-stats b {
@@ -103,7 +119,8 @@
   aspect-ratio: 1;
   margin: auto;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.18), transparent 58%);
+  background: rgba(34, 211, 238, 0.06);
+  border: 1px solid rgba(34, 211, 238, 0.2);
   display: grid;
   place-items: center;
 }
@@ -160,7 +177,7 @@
   display: grid;
   place-items: center;
   align-content: center;
-  background: linear-gradient(145deg, var(--panel), var(--panel2));
+  background: rgba(17, 24, 39, 0.88);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
 }
@@ -183,7 +200,9 @@
 }
 
 .contact-panel {
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(23, 32, 51, 0.78));
+  position: relative;
+  overflow: hidden;
+  background: rgba(17, 24, 39, 0.86);
   border: 1px solid var(--line);
   border-radius: 28px;
   padding: 24px;
@@ -211,9 +230,11 @@
 }
 
 .contact-channel {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 5px;
-  padding: 18px;
+  padding: 18px 18px 18px 22px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--line);
@@ -265,9 +286,11 @@
 }
 
 .contact-technician-note {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 5px;
-  padding: 14px 16px;
+  padding: 14px 16px 14px 20px;
   border: 1px solid rgba(34, 211, 238, 0.32);
   border-radius: 18px;
   background: rgba(34, 211, 238, 0.08);
@@ -295,6 +318,22 @@
   background: var(--brand2);
   box-shadow: 0 0 0 18px rgba(34, 211, 238, 0.12), 0 0 0 38px rgba(34, 211, 238, 0.06), 0 0 70px rgba(34, 211, 238, 0.55);
   animation: contactPulse 1.9s ease-in-out infinite;
+}
+
+:root[data-theme="light"] .contact-copy {
+  border-left-color: #0891b2;
+}
+
+:root[data-theme="light"] .contact-mini-stats div::before,
+:root[data-theme="light"] .contact-panel::before,
+:root[data-theme="light"] .contact-channel::before,
+:root[data-theme="light"] .contact-technician-note::before {
+  background: #0891b2;
+}
+
+:root[data-theme="light"] .contact-orbit {
+  background: rgba(8, 145, 178, 0.05);
+  border-color: rgba(8, 145, 178, 0.2);
 }
 
 .signal-row {
@@ -352,8 +391,28 @@
     font-size: 46px;
   }
 
+  .contact-copy {
+    padding-left: 16px;
+  }
+
+  .contact-copy p {
+    font-size: 18px;
+  }
+
   .contact-mini-stats {
     grid-template-columns: 1fr;
+  }
+
+  .contact-mini-stats div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .contact-mini-stats span {
+    max-width: 150px;
+    text-align: right;
   }
 
   .contact-panel {

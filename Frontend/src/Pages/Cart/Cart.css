@@ -9,9 +9,9 @@
   inset: 30px auto auto 4vw;
   width: 360px;
   height: 360px;
-  background: conic-gradient(from 120deg, rgba(34, 211, 238, 0.34), rgba(79, 140, 255, 0.1), rgba(52, 211, 153, 0.3), rgba(34, 211, 238, 0.34));
-  filter: blur(55px);
-  opacity: 0.8;
+  background: rgba(47, 156, 244, 0.1);
+  filter: blur(70px);
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -45,9 +45,7 @@
   padding: 24px;
   display: grid;
   align-content: end;
-  background:
-    linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(23, 32, 51, 0.76)),
-    radial-gradient(circle at top right, rgba(34, 211, 238, 0.28), transparent 48%);
+  background: rgba(17, 24, 39, 0.86);
   box-shadow: var(--shadow);
   overflow: hidden;
   position: relative;
@@ -66,7 +64,7 @@
   height: 58px;
   border-radius: 50%;
   background: var(--brand2);
-  box-shadow: 0 0 0 18px rgba(34, 211, 238, 0.1), 0 0 70px rgba(34, 211, 238, 0.45);
+  box-shadow: 0 0 0 14px rgba(34, 211, 238, 0.08), 0 0 38px rgba(34, 211, 238, 0.18);
 }
 
 .cart-count b {
@@ -91,7 +89,7 @@
   border: 1px solid var(--line);
   border-radius: 30px;
   padding: 18px;
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(23, 32, 51, 0.72));
+  background: rgba(17, 24, 39, 0.86);
   box-shadow: var(--shadow);
 }
 

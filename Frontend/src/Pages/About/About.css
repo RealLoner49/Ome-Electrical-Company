@@ -9,9 +9,9 @@
   inset: 80px auto auto 2vw;
   width: 330px;
   height: 330px;
-  background: conic-gradient(from 180deg, rgba(245, 158, 11, 0.38), rgba(34, 211, 238, 0.2), rgba(79, 140, 255, 0.45), rgba(245, 158, 11, 0.38));
-  filter: blur(45px);
-  opacity: 0.75;
+  background: rgba(47, 156, 244, 0.1);
+  filter: blur(68px);
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -26,6 +26,9 @@
 
 .about-copy {
   max-width: 780px;
+  position: relative;
+  padding-left: 22px;
+  border-left: 4px solid var(--brand2);
 }
 
 .about-copy h1 {
@@ -54,12 +57,27 @@
 .about-origin,
 .about-promise,
 .about-timeline article {
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.88), rgba(23, 32, 51, 0.76));
+  background: rgba(17, 24, 39, 0.86);
   border: 1px solid var(--line);
   border-radius: 26px;
   padding: 22px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
+}
+
+.about-stats div {
+  position: relative;
+  overflow: hidden;
+}
+
+.about-stats div::before,
+.about-value::before,
+.about-member-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--brand2);
 }
 
 :root[data-theme="light"] .about-stats div,
@@ -91,9 +109,9 @@
   border: 1px solid var(--line);
   border-radius: 34px;
   background:
-    linear-gradient(145deg, rgba(17, 24, 39, 0.78), rgba(8, 11, 18, 0.45)),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.12) 1px, transparent 1px),
-    linear-gradient(rgba(79, 140, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(17, 24, 39, 0.82), rgba(17, 24, 39, 0.82)),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(79, 140, 255, 0.07) 1px, transparent 1px);
   background-size: auto, 46px 46px, 46px 46px;
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -103,7 +121,7 @@
 .about-board::after {
   content: "";
   position: absolute;
-  background: linear-gradient(90deg, transparent, var(--brand2), transparent);
+  background: rgba(34, 211, 238, 0.55);
   height: 2px;
   width: 82%;
   left: 9%;
@@ -182,6 +200,13 @@
   margin: 18px 0 22px;
 }
 
+.about-origin,
+.about-story,
+.about-promise,
+.about-members {
+  position: relative;
+}
+
 .about-origin h2,
 .about-story h2,
 .about-promise h2 {
@@ -212,7 +237,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: linear-gradient(var(--brand), var(--brand2));
+  background: var(--brand2);
 }
 
 .about-timeline span {
@@ -236,9 +261,7 @@
 }
 
 .about-promise {
-  background:
-    radial-gradient(circle at 12% 20%, rgba(34, 211, 238, 0.18), transparent 32%),
-    linear-gradient(145deg, rgba(17, 24, 39, 0.88), rgba(23, 32, 51, 0.76));
+  background: rgba(17, 24, 39, 0.86);
 }
 
 .promise-list {
@@ -263,6 +286,8 @@
 }
 
 .about-value {
+  position: relative;
+  overflow: hidden;
   transition: 0.25s;
 }
 
@@ -289,6 +314,8 @@
 
 .about-members-head {
   max-width: 900px;
+  padding-left: 20px;
+  border-left: 4px solid var(--brand2);
 }
 
 .about-members-head h2 {
@@ -297,6 +324,7 @@
   line-height: 0.9;
   margin: 0 0 12px;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .about-members-head p {
@@ -314,11 +342,13 @@
 }
 
 .about-member-card {
+  position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
   align-items: start;
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.88), rgba(23, 32, 51, 0.76));
+  background: rgba(17, 24, 39, 0.86);
   border: 1px solid var(--line);
   border-radius: 26px;
   padding: 20px;
@@ -330,6 +360,22 @@
   background: rgba(255, 255, 255, 0.84);
 }
 
+:root[data-theme="light"] .about-copy,
+:root[data-theme="light"] .about-members-head {
+  border-left-color: #0891b2;
+}
+
+:root[data-theme="light"] .about-stats div::before,
+:root[data-theme="light"] .about-value::before,
+:root[data-theme="light"] .about-member-card::before {
+  background: #0891b2;
+}
+
+:root[data-theme="light"] .about-member-photo {
+  background: #f8fafc;
+  box-shadow: inset 0 0 0 8px #fff;
+}
+
 .about-member-photo {
   position: relative;
   display: grid;
@@ -339,9 +385,8 @@
   overflow: hidden;
   border: 1px solid rgba(34, 211, 238, 0.36);
   border-radius: 24px;
-  background:
-    radial-gradient(circle at 35% 22%, rgba(34, 211, 238, 0.35), transparent 34%),
-    linear-gradient(145deg, var(--panel), var(--panel2));
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.04);
 }
 
 .about-member-photo img {
@@ -428,6 +473,43 @@
 
   .about-copy h1 {
     font-size: 46px;
+  }
+
+  .about-copy {
+    padding-left: 16px;
+  }
+
+  .about-copy p {
+    font-size: 18px;
+  }
+
+  .about-stats div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .about-stats b {
+    font-size: 30px;
+  }
+
+  .about-stats span {
+    max-width: 150px;
+    text-align: right;
+  }
+
+  .about-members-head {
+    padding-left: 16px;
+  }
+
+  .about-members-head h2 {
+    font-size: 38px;
+    line-height: 0.96;
+  }
+
+  .about-members-head p {
+    font-size: 22px;
   }
 
   .about-board {

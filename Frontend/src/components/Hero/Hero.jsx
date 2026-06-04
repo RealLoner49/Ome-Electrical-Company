@@ -7,38 +7,37 @@ function Hero() {
       {
         id: 1,
         title: "Copper Cable 2.5mm",
-        subtitle: "Pure copper, durable insulation, stable current flow.",
-        accent: "#c41e3a",
-        tone: "#FFD700",
+        subtitle: "Pure copper wiring built for safe current flow and long-term durability.",
         image: "/images/Copper Cable 2.5mm.jpg",
       },
       {
         id: 2,
         title: "Heavy Duty Extension Box",
-        subtitle: "Heavy build, safe sockets, perfect for worksites.",
-        accent: "#FF6B35",
-        tone: "#87CEEB",
+        subtitle: "Reliable sockets for homes, shops, offices, and worksites.",
         image: "/images/Heavy Duty Extension Box.jpg",
       },
       {
         id: 3,
         title: "Industrial Circuit Breaker 20A",
-        subtitle: "Reliable protection, smooth trip response, long life.",
-        accent: "#FFD700",
-        tone: "#90EE90",
+        subtitle: "Quality circuit protection for electrical safety and performance.",
         image: "/images/IndustrialCircuit Breaker 20A.jpg",
       },
       {
         id: 4,
         title: "Stabilizer",
-        subtitle: "Voltage balance, appliance safety, clean performance.",
-        accent: "#4169E1",
-        tone: "#FF69B4",
+        subtitle: "Protect your appliances from unstable voltage and sudden power surges.",
         image: "/images/Stablizer (1).jpg",
       },
     ],
     []
   );
+
+  const applianceCards = [
+    { name: "Ceiling Fans", text: "Durable fans for homes and offices.", icon: "🌀" },
+    { name: "LED Lights", text: "Bright, energy-saving lighting options.", icon: "💡" },
+    { name: "Sockets & Switches", text: "Premium fittings for clean installations.", icon: "🔌" },
+    { name: "Stabilizers", text: "Voltage protection for your appliances.", icon: "⚡" },
+  ];
 
   const [current, setCurrent] = useState(0);
   const touchStartX = useRef(null);
@@ -47,40 +46,38 @@ function Hero() {
   const next = () => goTo(current + 1);
   const prev = () => goTo(current - 1);
 
-  // Autoplay slideshow
   useEffect(() => {
-    const t = setInterval(() => {
-      setCurrent((p) => (p + 1) % slides.length);
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
     }, 5200);
-    return () => clearInterval(t);
+
+    return () => clearInterval(timer);
   }, [slides.length]);
 
-
-  // Keyboard support
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
     };
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [current]);
 
-
-  // Swipe support
   const onTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
 
   const onTouchEnd = (e) => {
-    if (touchStartX.current == null) return;
+    if (touchStartX.current === null) return;
+
     const endX = e.changedTouches[0].clientX;
     const diff = endX - touchStartX.current;
 
     if (Math.abs(diff) > 50) {
-      if (diff < 0) next();
-      else prev();
+      diff < 0 ? next() : prev();
     }
+
     touchStartX.current = null;
   };
 
@@ -89,73 +86,66 @@ function Hero() {
   return (
     <section
       className="hero2"
-      style={{
-        "--accent": active.accent,
-        "--tone": active.tone,
-      }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Background layer */}
-      <div className="hero2__bg" aria-hidden="true" />
-
       <div className="hero2__wrap">
-        {/* Left copy */}
         <div className="hero2__copy">
           <div className="hero2__chip">
-            <span className="hero2__dot" />
-            New stock in store
+            <span />
+            Trusted Electrical Store
           </div>
 
           <h1 className="hero2__title">
-            {active.title.split(" ").slice(0, 2).join(" ")}{" "}
-            <span>{active.title.split(" ").slice(2).join(" ")}</span>
+            Quality Electrical Products for Homes & Businesses
           </h1>
 
-          <p className="hero2__sub">{active.subtitle}</p>
+          <p className="hero2__sub">
+            Shop original cables, switches, fans, lights, stabilizers, circuit
+            breakers, and other reliable electrical appliances.
+          </p>
 
           <div className="hero2__actions">
             <a className="hero2__btn hero2__btn--primary" href="#products">
-              Shop Now
+              Shop Products
             </a>
-            <a className="hero2__btn hero2__btn--ghost" href="#contact">
+            <a className="hero2__btn hero2__btn--secondary" href="#contact">
               Request Quote
             </a>
           </div>
 
-          {/* Indicators */}
-          <div className="hero2__indicators">
-            {slides.map((s, i) => (
-              <button
-                key={s.id}
-                className={`hero2__indicator ${i === current ? "is-active" : ""}`}
-                onClick={() => goTo(i)}
-                aria-label={`Go to slide ${i + 1}`}
-              />
+          <div className="hero2__miniGrid">
+            {applianceCards.map((item) => (
+              <div className="hero2__miniCard" key={item.name}>
+                <div className="hero2__miniIcon">{item.icon}</div>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Right product card */}
         <div className="hero2__stage">
-          <div className="hero2__card">
+          <div className="hero2__productCard">
             <div className="hero2__cardTop">
-              <span className="hero2__badge">Featured</span>
+              <span>Featured Product</span>
+
               <div className="hero2__nav">
-                <button className="hero2__navBtn" onClick={prev} aria-label="Previous">
+                <button onClick={prev} aria-label="Previous product">
                   ❮
                 </button>
-                <button className="hero2__navBtn" onClick={next} aria-label="Next">
+                <button onClick={next} aria-label="Next product">
                   ❯
                 </button>
               </div>
             </div>
 
-            <div className="hero2__imageWrap">
+            <div className="hero2__imageBox">
               <div
                 className="hero2__slider"
                 style={{ transform: `translateX(-${current * 100}%)` }}
-                aria-live="polite"
               >
                 {slides.map((slide) => (
                   <img
@@ -163,22 +153,28 @@ function Hero() {
                     src={slide.image}
                     alt={slide.title}
                     className="hero2__image"
-                    loading="eager"
                   />
                 ))}
               </div>
             </div>
 
             <div className="hero2__cardBottom">
-              <p className="hero2__name">{active.title}</p>
-              <p className="hero2__hint">Swipe, tap dots, or use arrows.</p>
+              <p className="hero2__category">Available in store</p>
+              <h2>{active.title}</h2>
+              <p>{active.subtitle}</p>
+            </div>
+
+            <div className="hero2__indicators">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  onClick={() => goTo(index)}
+                  className={index === current ? "is-active" : ""}
+                  aria-label={`Go to product ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
-
-          {/* Decorative blobs */}
-          <span className="hero2__blob hero2__blob--1" aria-hidden="true" />
-          <span className="hero2__blob hero2__blob--2" aria-hidden="true" />
-          <span className="hero2__ring" aria-hidden="true" />
         </div>
       </div>
     </section>
